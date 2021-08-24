@@ -43,6 +43,8 @@ x-----------x
 x-----------x
 ```
 
+Example level located in level.gdcmd file
+
 Spikes are '!' symbols
 
 Blocks are 'o' symbols
@@ -61,4 +63,4 @@ Orbs are coming soon
 - [ ] Ship portal
 - [ ] Orbs
 - [ ] More fancy graphics
-- [ ] For you, reader - have fun
+- [x] For you, reader - have fun
