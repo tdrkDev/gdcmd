@@ -1,11 +1,14 @@
 # GDCmd
 
-Geometry Dash in terminal, written on C.
+Geometry Dash for your Linux terminal, written on C.
 
 ## Building
 
 ```sh
+# install dependencies
 sudo dnf install ncurses-devel clang make git
+
+# build + install
 git clone https://github.com/tdrkDev/gdcmd.git
 cd gdcmd
 sudo make install
