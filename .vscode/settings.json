@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "xaver.clang-format",
+    "files.associations": {
+        "unistd.h": "c",
+        "random": "c",
+        "errno.h": "c"
+    }
+}
