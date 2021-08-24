@@ -53,9 +53,9 @@ Orbs are coming soon
 
 ## TODO
 
-- [x] Rewrite framebuffer and physics
-- [x] Make gameplay more responsible
-- [x] Ship portal
-- [x] Orbs
-- [x] More fancy graphics
-- [x] For you, reader - have fun
+- [ ] Rewrite framebuffer and physics
+- [ ] Make gameplay more responsible
+- [ ] Ship portal
+- [ ] Orbs
+- [ ] More fancy graphics
+- [ ] For you, reader - have fun
