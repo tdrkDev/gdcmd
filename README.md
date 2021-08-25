@@ -1,11 +1,14 @@
 # GDCmd
 
-Geometry Dash in terminal, written on C.
+Geometry Dash for your Linux terminal, written on C.
 
 ## Building
 
 ```sh
+# install dependencies
 sudo dnf install ncurses-devel clang make git
+
+# build + install
 git clone https://github.com/tdrkDev/gdcmd.git
 cd gdcmd
 sudo make install
@@ -17,6 +20,11 @@ gdcmd 'level file'
 ## Supported platforms
 
 Only hardcore, only linux.
+
+### If you want Windows
+
+1. Port player.c's pthread code part to WinAPI.
+2. Port terminal size ioctl code part to WinAPI.
 
 ## Creating level
 
@@ -40,6 +48,8 @@ x-----------x
 x-----------x
 ```
 
+Example level located in level.gdcmd file
+
 Spikes are '!' symbols
 
 Blocks are 'o' symbols
@@ -58,4 +68,4 @@ Orbs are coming soon
 - [ ] Ship portal
 - [ ] Orbs
 - [ ] More fancy graphics
-- [ ] For you, reader - have fun
+- [x] For you, reader - have fun
