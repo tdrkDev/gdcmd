@@ -1,8 +1,8 @@
 #
 # Configuration
 #
-CFLAGS := -std=gnu18
-LDFLAGS := -lpthread -lncurses
+CFLAGS := -std=gnu18 -g
+LDFLAGS := -lpthread
 CC := clang
 
 BINARY := gdcmd

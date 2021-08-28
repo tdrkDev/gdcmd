@@ -1,13 +1,23 @@
 #include <errno.h>
-#include <fb.h>
+#include <graphics/gfxlevel.h>
 #include <level.h>
-#include <log.h>
-#include <player.h>
-#include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
 #include <types.h>
 #include <unistd.h>
+
+long get_millis(void) {
+  struct timeval t;
+
+  if (gettimeofday(&t, NULL) == -1)
+    return 0;
+
+  const long sec_as_ms = ((long)t.tv_sec) * 1000;
+  const long usec_as_ms = ((long)t.tv_usec) / 1000;
+
+  return sec_as_ms + usec_as_ms;
+}
 
 int main(int argc, char const *argv[]) {
   int i = 0, ret = 0;
@@ -24,7 +34,7 @@ int main(int argc, char const *argv[]) {
     return EINVAL;
   }
 
-  if (!argv[1]) {
+  if (argc < 2) {
     LOGE("Level file not specified\n");
     return EINVAL;
   }
@@ -50,42 +60,56 @@ int main(int argc, char const *argv[]) {
     return ret;
   }
 
-  LOGI("If you see some problems with display,\n");
-  LOGI("try to do 'clear && clear' in your terminal.\n");
+  struct winsize sz;
 
-  usleep(2000 * 1000);
+  // Get terminal size
+  ret = ioctl(fileno(stdout), TIOCGWINSZ, &sz);
+  if (ret < 0) {
+    LOGE("Failed to get terminal size\n");
+  }
 
-  // Create jump pthread
+  session->fb.term_x = sz.ws_col;
+  session->fb.term_y = sz.ws_row;
 
-  // Allocate some space to draw user's level
-  for (i = 0; i < session->lvl.end[1] + 15; i++)
-    printf("\r\n");
+  gfx_level_t *level = malloc(sizeof(gfx_level_t));
+  int offset[2] = {0, 0};
 
-  // Move cursor to the start of allocated space
-  printf("\033[%dA", session->lvl.end[1] + 10);
+  printf("\033[2J");
 
-  player_init(session);
-  fb_init(session);
+  level_string_to_gfx(session, level);
 
-  // Draw level in 10FPS :)
-  for (i = 0; i < session->lvl.end[0]; i++) {
-    // Draw level to fb
-    draw_level(i, session);
+  long prev = 0, prevoff = 0;
+  int ftime = 20;
+  int fps = 60;
 
-    // If needed, change player y.
-    check_player_actions(session);
+  for (offset[0] = 0; offset[0] < session->lvl.end[0] * 6; offset[0]++) {
+    prev = get_millis();
 
-    // Draw player to fb
-    draw_player(session);
+    if (prevoff + 72 < offset[0]) {
+      ret = ioctl(fileno(stdout), TIOCGWINSZ, &sz);
+      if (!ret) {
+        session->fb.term_x = sz.ws_col;
+        session->fb.term_y = sz.ws_row;
+      }
 
-    dump_fb(session);
-
-    if (!session->plr.alive) {
-      return 0;
+      prevoff = offset[0];
     }
 
-    // To get 10FPS
-    usleep(100 * 1000);
+    draw_level_gobj_with_offset(session, level, offset);
+
+    /* For debug: FPS, frametime, percentage */
+    printf("\033[5;10H %d FPS (%dms)\n", fps, ftime);
+    printf("\033[5;%dH %.2f%c\n", session->fb.term_x - 15,
+           ((float)offset[0] / (session->lvl.end[0] * 6)) * 100, '%');
+
+    ftime = (get_millis() - prev) % 1000;
+
+    if (ftime < 20) {
+      usleep((20 - ftime) * 2500);
+    }
+
+    ftime = (get_millis() - prev) % 1000;
+    fps = 1000 / ftime;
   }
 
   return 0;
